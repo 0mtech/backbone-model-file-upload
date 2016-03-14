@@ -81,18 +81,19 @@
         // Flatten Attributes reapplying File Object
         var formAttrs = _.clone( mergedAttrs ),
           fileAttr = mergedAttrs[ this.fileAttribute ];
-        formAttrs = this._flatten( formAttrs );
+        //formAttrs = this._flatten( formAttrs );
         formAttrs[ this.fileAttribute ] = fileAttr;
 
         // Converting Attributes to Form Data
         var formData = new FormData();
         _.each( formAttrs, function( value, key ){
-          if (value instanceof FileList || (key === that.fileAttribute && value instanceof Array)) {
+          if (value instanceof Backbone.Collection || value instanceof Backbone.PageableCollection) {
+            formData.append(key, _.pluck(value.toJSON(), 'id'));
+          }else if (value instanceof FileList || (key === that.fileAttribute && value instanceof Array)) {
             _.each(value, function(file) {
               formData.append( key, file );
             });
-          }
-          else {
+          } else {
             formData.append( key, value );
           }
         });
